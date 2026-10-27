@@ -29,8 +29,8 @@ FECHA DE ENTREGA:
 26 de Octubre de 2026
 
 ENLACES DE PRODUCCIÓN Y CÓDIGO FUENTE:
-- Repositorio GitHub: https://github.com/[TU_USUARIO]/shopmaster-ecommerce-ia
-- Despliegue en GitHub Pages: https://[TU_USUARIO].github.io/shopmaster-ecommerce-ia/
+- Repositorio GitHub: https://github.com/JUANCITOPENA/shopmaster-ecommerce-ia
+- Despliegue en GitHub Pages: https://juancitopena.github.io/shopmaster-ecommerce-ia/
 - Despliegue en Vercel: https://shopmaster-ecommerce-ia.vercel.app/
 ========================================================================================
 ```

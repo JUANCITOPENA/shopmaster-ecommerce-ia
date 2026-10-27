@@ -4,6 +4,13 @@ Plataforma moderna, responsiva y funcional de comercio digital creada a partir d
 
 ---
 
+## 🌐 Enlaces Públicos en Producción
+
+- **🔗 Repositorio en GitHub:** [https://github.com/JUANCITOPENA/shopmaster-ecommerce-ia](https://github.com/JUANCITOPENA/shopmaster-ecommerce-ia)
+- **🚀 Despliegue en Vivo (GitHub Pages):** [https://juancitopena.github.io/shopmaster-ecommerce-ia/](https://juancitopena.github.io/shopmaster-ecommerce-ia/)
+
+---
+
 ## 🚀 Características Principales
 
 - **⚡ Consumo de API en Vivo:** Obtiene productos, descripciones, precios, ratings e imágenes desde `https://fakestoreapi.com/products`.

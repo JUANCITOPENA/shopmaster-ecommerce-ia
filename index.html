@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopMaster 🛒 - Tienda Digital Potenciada con Inteligencia Artificial</title>
+  
+  <!-- Google Fonts: Roboto -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGACIÓN (NAVBAR)               -->
+  <!-- ========================================== -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-electric sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <span class="brand-icon">🛒</span>
+        <span class="brand-title">Shop<strong>Master</strong></span>
+        <span class="badge bg-success text-white ms-1 fs-xs">AI Ready</span>
+      </a>
+
+      <!-- Buscador y Acciones -->
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <!-- Buscador en tiempo real -->
+        <div class="input-group d-none d-md-flex search-box">
+          <span class="input-group-text bg-white border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+          <input type="text" id="searchInput" class="form-control border-0" placeholder="Buscar productos...">
+        </div>
+
+        <!-- Botón de Carrito con Contador Dinámico -->
+        <button class="btn btn-cart position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas" id="btnOpenCart">
+          <i class="fa-solid fa-cart-shopping fs-5"></i>
+          <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Buscador para Móviles -->
+  <div class="container py-2 d-md-none bg-light border-bottom">
+    <div class="input-group">
+      <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+      <input type="text" id="searchInputMobile" class="form-control" placeholder="Buscar productos...">
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- HERO BANNER EDUCATIVO & COMERCIAL          -->
+  <!-- ========================================== -->
+  <header class="hero-section text-white py-5 mb-4">
+    <div class="container text-center py-3">
+      <span class="badge bg-light text-primary px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+        ✨ E-Commerce Inteligente &bullet; FakeStore API Demo
+      </span>
+      <h1 class="display-5 fw-bold mb-3">Tu Tienda Digital en Minutos con IA 🚀</h1>
+      <p class="lead max-w-700 mx-auto text-light-opacity mb-4">
+        Descubre cómo la Inteligencia Artificial revoluciona el comercio electrónico. Catálogo dinámico con API real, carrito reactivo con LocalStorage y emisión automática de tickets térmicos en PDF.
+      </p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        <a href="#catalogo" class="btn btn-success btn-lg px-4 shadow-sm">
+          🛍️ Explorar Catálogo
+        </a>
+        <button class="btn btn-outline-light btn-lg px-4" data-bs-toggle="modal" data-bs-target="#infoModal">
+          💡 ¿Cómo funciona?
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- SECCIÓN DE FILTROS POR CATEGORÍA           -->
+  <!-- ========================================== -->
+  <main class="container mb-5" id="catalogo">
+    <div class="row align-items-center mb-4 g-3">
+      <div class="col-md-6">
+        <h2 class="fw-bold text-dark m-0 d-flex align-items-center gap-2">
+          <span>📦</span> Catálogo de Productos
+        </h2>
+        <p class="text-muted small m-0" id="productCountLabel">Cargando productos desde la API...</p>
+      </div>
+      <div class="col-md-6">
+        <!-- Filtros de categoría -->
+        <div class="d-flex gap-2 flex-wrap justify-content-md-end" id="categoryFilters">
+          <button class="btn btn-sm btn-category active" data-category="all">Todos</button>
+          <button class="btn btn-sm btn-category" data-category="men's clothing">Ropa Hombre</button>
+          <button class="btn btn-sm btn-category" data-category="women's clothing">Ropa Mujer</button>
+          <button class="btn btn-sm btn-category" data-category="jewelery">Joyería</button>
+          <button class="btn btn-sm btn-category" data-category="electronics">Electrónica</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner de Carga -->
+    <div id="loadingSpinner" class="text-center py-5">
+      <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status">
+        <span class="visually-hidden">Cargando productos...</span>
+      </div>
+      <p class="mt-3 text-muted fw-semibold">Conectando con la API FakeStore...</p>
+    </div>
+
+    <!-- Alerta de Error de Conexión -->
+    <div id="errorAlert" class="alert alert-danger d-none shadow-sm" role="alert">
+      <div class="d-flex align-items-center gap-3">
+        <i class="fa-solid fa-triangle-exclamation fs-3"></i>
+        <div>
+          <h5 class="alert-heading m-0 fw-bold">Error al cargar productos</h5>
+          <p class="m-0 small">No se pudo establecer conexión con la API pública. Por favor, verifica tu conexión a internet o intenta nuevamente.</p>
+        </div>
+        <button class="btn btn-outline-danger btn-sm ms-auto" onclick="fetchProducts()">Reintentar</button>
+      </div>
+    </div>
+
+    <!-- Grid de Productos -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productsGrid">
+      <!-- Inyectado dinámicamente con JavaScript -->
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL DE DETALLE DEL PRODUCTO ("VER MÁS") -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="productDetailModalLabel">
+            <i class="fa-solid fa-circle-info text-primary"></i> Detalle del Producto
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="row g-4 align-items-center">
+            <!-- Imagen grande centrada -->
+            <div class="col-md-5 text-center">
+              <div class="modal-image-container p-3 rounded bg-white shadow-sm">
+                <img id="modalProductImage" src="" alt="Producto" class="img-fluid modal-img">
+              </div>
+            </div>
+            <!-- Información detallada -->
+            <div class="col-md-7">
+              <span id="modalProductCategory" class="badge bg-primary text-uppercase px-2 py-1 mb-2">Categoría</span>
+              <h4 id="modalProductTitle" class="fw-bold text-dark mb-2">Título del Producto</h4>
+              
+              <!-- Rating / Valoración -->
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="text-warning small" id="modalProductRatingStars"></div>
+                <span class="text-muted small" id="modalProductRatingText">0.0 (0 reviews)</span>
+              </div>
+
+              <!-- Precio destacado -->
+              <div class="mb-3">
+                <span class="fs-2 fw-bold text-success" id="modalProductPrice">$0.00</span>
+                <span class="text-muted small ms-1">USD (Impuestos incluidos)</span>
+              </div>
+
+              <!-- Descripción -->
+              <p id="modalProductDescription" class="text-muted small mb-4 product-description">
+                Descripción detallada del producto.
+              </p>
+
+              <!-- Selector de Cantidad -->
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <label for="modalQuantity" class="fw-bold text-dark small m-0">Cantidad:</label>
+                <div class="input-group input-group-sm quantity-selector" style="max-width: 130px;">
+                  <button class="btn btn-outline-secondary" type="button" id="btnDecreaseModalQty">-</button>
+                  <input type="number" id="modalQuantity" class="form-control text-center" value="1" min="1" max="99">
+                  <button class="btn btn-outline-secondary" type="button" id="btnIncreaseModalQty">+</button>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success flex-grow-1 py-2 fw-bold shadow-sm" id="btnAddToCartFromModal">
+                  🛒 Agregar al Carrito
+                </button>
+                <button type="button" class="btn btn-outline-secondary py-2" data-bs-dismiss="modal">
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- OFFCANVAS: CARRITO DE COMPRAS              -->
+  <!-- ========================================== -->
+  <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+    <div class="offcanvas-header bg-electric text-white">
+      <h5 class="offcanvas-title fw-bold d-flex align-items-center gap-2" id="cartOffcanvasLabel">
+        <span>🛒</span> Mi Carrito de Compras
+      </h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    
+    <div class="offcanvas-body d-flex flex-column p-3">
+      <!-- Contenedor de Items del Carrito -->
+      <div id="cartItemsContainer" class="flex-grow-1 overflow-auto pe-1">
+        <!-- Inyectado dinámicamente -->
+      </div>
+
+      <!-- Resumen y Total -->
+      <div class="border-top pt-3 mt-auto bg-light p-3 rounded">
+        <div class="d-flex justify-content-between mb-1 text-muted small">
+          <span>Subtotal artículos:</span>
+          <span id="cartSubtotal" class="fw-bold">$0.00</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2 text-muted small">
+          <span>Impuestos estim. (18%):</span>
+          <span id="cartTaxes" class="fw-bold">$0.00</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3 fs-5 fw-bold text-dark border-top pt-2">
+          <span>Total a Pagar:</span>
+          <span id="cartTotal" class="text-success">$0.00</span>
+        </div>
+
+        <!-- Botones de acción del carrito -->
+        <div class="d-grid gap-2">
+          <button class="btn btn-success btn-lg fw-bold shadow-sm py-2" id="btnGoToCheckout">
+            💳 Ir a Pagar Ahora
+          </button>
+          <button class="btn btn-outline-danger btn-sm" id="btnClearCart">
+            <i class="fa-solid fa-trash-can me-1"></i> Vaciar Carrito
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PASARELA DE PAGO (SIMULADA)         -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="checkoutModalLabel">
+            <span>💳</span> Pasarela de Pago Segura (Simulación)
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Resumen rápido del monto -->
+          <div class="alert alert-primary d-flex justify-content-between align-items-center mb-4 py-2 px-3">
+            <span class="small fw-semibold">Total a debitar:</span>
+            <span class="fs-4 fw-bold text-primary" id="checkoutTotalDisplay">$0.00</span>
+          </div>
+
+          <!-- Formulario de Tarjeta -->
+          <form id="paymentForm" novalidate>
+            <!-- Nombre Completo -->
+            <div class="mb-3">
+              <label for="cardName" class="form-label small fw-bold text-dark">Nombre Completo del Titular</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-user text-muted"></i></span>
+                <input type="text" class="form-control" id="cardName" placeholder="Ej: Juan Pérez" required>
+              </div>
+              <div class="invalid-feedback">Por favor, ingresa el nombre del titular.</div>
+            </div>
+
+            <!-- Número de Tarjeta -->
+            <div class="mb-3">
+              <label for="cardNumber" class="form-label small fw-bold text-dark">Número de Tarjeta</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-credit-card text-muted"></i></span>
+                <input type="text" class="form-control font-monospace" id="cardNumber" placeholder="4000 1234 5678 9010" maxlength="19" required>
+                <span class="input-group-text bg-light text-primary" id="cardBrandIcon"><i class="fa-brands fa-cc-visa"></i></span>
+              </div>
+              <div class="invalid-feedback">Ingresa un número de tarjeta válido (16 dígitos).</div>
+            </div>
+
+            <div class="row g-2 mb-4">
+              <!-- Fecha de Vencimiento -->
+              <div class="col-6">
+                <label for="cardExpiry" class="form-label small fw-bold text-dark">Vencimiento</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="fa-solid fa-calendar-days text-muted"></i></span>
+                  <input type="text" class="form-control text-center font-monospace" id="cardExpiry" placeholder="MM/AA" maxlength="5" required>
+                </div>
+                <div class="invalid-feedback">Formato MM/AA requerido.</div>
+              </div>
+              
+              <!-- Código de Seguridad (CVV) -->
+              <div class="col-6">
+                <label for="cardCVV" class="form-label small fw-bold text-dark">Código CVV</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
+                  <input type="password" class="form-control text-center font-monospace" id="cardCVV" placeholder="123" maxlength="4" required>
+                </div>
+                <div class="invalid-feedback">CVV de 3 o 4 dígitos.</div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-4 text-muted small">
+              <i class="fa-solid fa-shield-halved text-success"></i>
+              <span>Transacción protegida por cifrado SSL simulado de 256 bits.</span>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg fw-bold py-2 shadow-sm" id="btnSubmitPayment">
+                ✅ Pagar Ahora y Generar Ticket
+              </button>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ÉXITO Y DESCARGA DE TICKET TÉRMICO  -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg text-center p-4">
+        <div class="mb-3">
+          <div class="success-checkmark mx-auto">
+            <i class="fa-solid fa-circle-check text-success display-3"></i>
+          </div>
+        </div>
+        <h3 class="fw-bold text-dark mb-1">¡Compra Exitosa! 🎉</h3>
+        <p class="text-muted small mb-4">
+          El pago ha sido procesado correctamente y tu orden ha sido confirmada en el sistema.
+        </p>
+
+        <!-- Vista previa estilizada tipo Ticket Térmico -->
+        <div class="thermal-receipt-preview mb-4 text-start font-monospace p-3 bg-light border rounded">
+          <div class="text-center fw-bold">================================</div>
+          <div class="text-center fw-bold">SHOPMASTER DIGITAL</div>
+          <div class="text-center small">RNC: 101-9876543-2</div>
+          <div class="text-center small">TICKET FISCAL ELECTRÓNICO</div>
+          <div class="text-center fw-bold">================================</div>
+          <div class="small mt-2" id="ticketPreviewClient">CLIENTE: -</div>
+          <div class="small" id="ticketPreviewDate">FECHA: -</div>
+          <div class="small" id="ticketPreviewOrder">ORDEN: -</div>
+          <div class="text-center">--------------------------------</div>
+          <div id="ticketPreviewItems" class="small">
+            <!-- Items del ticket -->
+          </div>
+          <div class="text-center">--------------------------------</div>
+          <div class="d-flex justify-content-between fw-bold fs-6 mt-1">
+            <span>TOTAL PAGADO:</span>
+            <span id="ticketPreviewTotal">$0.00</span>
+          </div>
+          <div class="text-center fw-bold mt-2">================================</div>
+          <div class="text-center small text-muted">¡GRACIAS POR SU COMPRA!</div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary btn-lg fw-bold shadow-sm py-2" id="btnDownloadPDF">
+            <i class="fa-solid fa-file-pdf me-2"></i> Descargar Ticket Térmico (PDF)
+          </button>
+          <button class="btn btn-outline-success fw-bold py-2" data-bs-dismiss="modal" id="btnContinueShopping">
+            🛍️ Continuar Comprando
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL INFORMATIVO: CÓMO FUNCIONA           -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold" id="infoModalLabel">💡 Arquitectura del Proyecto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body small text-muted">
+          <h6 class="fw-bold text-dark">🚀 Flujo de Desarrollo con IA:</h6>
+          <p>Este sistema demuestra cómo combinar tecnologías web estándar con asistencia de Inteligencia Artificial para crear tiendas escalables:</p>
+          <ul class="ps-3 mb-3">
+            <li><strong>FakeStore API:</strong> Consumo en vivo de productos reales con imágenes, precios y categorías.</li>
+            <li><strong>Bootstrap 5:</strong> Sistema de rejilla responsiva (Mobile First) y modales interactivos.</li>
+            <li><strong>LocalStorage:</strong> Memoria persistente para guardar el carrito aunque cierres el navegador.</li>
+            <li><strong>jsPDF:</strong> Creación paramétrica de tickets de 80mm de ancho tipo impresora térmica POS.</li>
+          </ul>
+          <p class="mb-0">¡Listo para ser presentado como proyecto universitario o plantilla comercial!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+      <div class="mb-2">
+        <span class="fs-4">🛒</span>
+        <span class="fw-bold fs-5 ms-1">ShopMaster AI</span>
+      </div>
+      <p class="text-secondary small mb-2">
+        Plataforma demostrativa de Comercio Electrónico desarrollada con Inteligencia Artificial.
+      </p>
+      <div class="text-muted fs-xs">
+        &copy; 2026 ShopMaster Inc. Desarrollado con HTML5, CSS3, JavaScript, Bootstrap 5 y jsPDF.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- SCRIPTS Y LIBRERÍAS EXTERNAS               -->
+  <!-- ========================================== -->
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- jsPDF Library (cdnjs) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Lógica de la Aplicación -->
+  <script src="app.js"></script>
+</body>
+</html>
